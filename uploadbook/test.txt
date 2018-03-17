@@ -1,0 +1,113 @@
+function int main(void){
+	bool networkExist = connectToNetwork();
+	string username = getString();
+	string password = getString();
+	string synchronous = getString();
+	if(networkExist)
+	{	
+		if(synchronous == "yes")
+		{
+			if(compareDate(getDate(),lastDate) > 3)
+			{
+				synchronize();
+			}
+		}
+		else
+		{
+			print("Synchronization is a good way to ensure that your data is not lost.Do you want to activate synchronization?");
+			string response = getString();
+			if(response == "yes")
+			{
+				synchronous = "yes";
+				synchronize();
+			}
+		}
+		bool connectedToCloud = connectToCloud(username, password);
+		if(connectedToCloud)
+		{
+			string request = getString();
+			if(request == "upload")
+			{
+				upload(fileName);
+			}
+			else if(request == "download")
+			{
+				download(fileName);
+			}
+			else if(request == "exit")
+			{
+				date lastDate = getDate();
+			}
+		}
+		else
+		{
+		print("Cloud Connection Error!");
+		}
+	}
+	else
+	{
+		print("Network Connection Error!");
+	}
+}
+
+function void upload(string fileName)
+{
+	string filePath = findComp(fileName);
+	if(filePath != null)
+	{
+		float freeSpace = getFreeSpace(cloud);
+		float fileSize = getSize(filePath);
+		string type = getType(filePath);
+		
+		if(freeSpace < fileSize)
+		{
+			print("Not enough space!");
+		}
+		else
+		{
+			string serverPath = getString();
+			bool sameName = sameNameCtrl(serverPath, fileName);
+			while(sameName==true)
+			{
+				fileName = getString();
+			}
+			compToCloud(filePath, serverPath, fileName);
+			print("Upload completed!");
+		}
+	}
+	else
+	{
+		print("This file not found!");
+	}
+}
+
+function void download(string fileName)
+{
+	string filePath = findServer(fileName);
+	if(filePath != null)
+	{
+		float freeSpace = getFreeSpace(comp);
+		float fileSize = getSizeServer(filePath);
+		string type = getType(filePath);
+		
+		if(freeSpace < fileSize)
+		{
+			print("Not enough space!");
+		}
+		else
+		{
+			string compPath = getString();
+			bool sameName = sameNameCtrl(compPath, fileName);
+			while(sameName==true)
+			{
+				fileName = getString();
+			}
+			cloudToComp(filePath, compPath, fileName);
+			print("Download completed!");
+		}
+	}
+	else
+	{
+		print("This file not found!");
+	}
+}
